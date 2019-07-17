@@ -1,0 +1,24 @@
+function [scorecn]= PSI(adj,beta_val,spaths)
+%PSI - Calculates similarity score
+%adj is the adjacency matrix of the network
+%beta is the damping parameter
+%spaths is the set of all shortest paths between every pair of nodes (matrix)
+%output scorecn returns similarity score between all pairs. The value is computed using all nodes.
+
+
+degs = 1./log(sum(adj)+1);
+len = length(adj(:,1));
+
+scorecn = zeros(len);
+for i=1:len-1
+    for j=i+1:len
+        dd = degs;
+        x = spaths(i,:);            
+        y = spaths(j,:);
+        x([i, j]) = [];
+        y([i, j]) = [];
+        dd([i, j]) = [];
+        scorecn(i,j) = sum(beta_val.^(x+y-2).*dd);
+    end
+end
+scorecn = scorecn+scorecn';
